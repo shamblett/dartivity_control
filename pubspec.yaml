@@ -6,3 +6,7 @@ environment:
 dependencies:
   mustache: any
   path: any
+  gcloud: '>0.2.0'
+  googleapis_auth: any
+  json_object: '>=1.0.19'
+
