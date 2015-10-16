@@ -63,7 +63,17 @@ class DartivityControlPageManager {
     _jsUrl = "http://" + httpHost + '/' + JS_DIR;
   }
 
-  /// File contents
+  /// pageValid
+  /// Checks if a page id is valid
+  bool pageValid(int pageId) {
+
+    if ((pageId >= home) && (pageId <= _pageMap.length)) return true;
+    return false;
+
+  }
+
+  /// getHtmlFileContents
+  /// File contents getter
   String getHtmlFileContents(int pageId) {
 
     String path = _htmlPath + _pageMap[pageId];

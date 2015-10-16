@@ -25,6 +25,9 @@ class DartivityControl {
     DartivityControlPageManager pageManager =
     new DartivityControlPageManager(docRoot, httpHost);
 
+    // Valid page check
+    if (!pageManager.pageValid(pageId)) pageId = DartivityControlPageManager.error;
+
     //TODO for now
     String page = pageManager.getHtmlFileContents(pageId);
     _apache.writeOutput(page);
