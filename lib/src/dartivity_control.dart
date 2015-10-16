@@ -17,7 +17,17 @@ class DartivityControl {
 
   /// despatch
   /// Despatch the incoming request dependant on its incoming
-  /// pge identifier
+  /// page identifier
   void despatch(int pageId) {
+    // Get a page manager
+    String docRoot = _apache.Server['DOCUMENT_ROOT'];
+    String httpHost = _apache.Server['HTTP_HOST'];
+    DartivityControlPageManager pageManager =
+    new DartivityControlPageManager(docRoot, httpHost);
+
+    //TODO for now
+    String page = pageManager.getHtmlFileContents(pageId);
+    _apache.writeOutput(page);
+
   }
 }

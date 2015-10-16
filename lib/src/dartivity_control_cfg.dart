@@ -8,7 +8,7 @@
 part of dartivity_control;
 
 class DartivityControlCfg {
-  /// Default page
-  static const int defaultPage = DartivityControlPage.home;
-  static const int errorPage = DartivityControlPage.error;
+  /// Default pages
+  static const int defaultPage = DartivityControlPageManager.home;
+  static const int errorPage = DartivityControlPageManager.error;
 }
