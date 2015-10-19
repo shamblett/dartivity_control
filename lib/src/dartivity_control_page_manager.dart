@@ -91,9 +91,18 @@ class DartivityControlPageManager {
         String homeTpl = getHtmlFileContents(home);
         tpl.Template template =
         new tpl.Template(homeTpl, name: 'home.html', htmlEscapeValues: true);
-        String homeTplPath = _cssUrl + '/home';
+        String homeTplPath = _cssUrl + 'home';
         String output = template
         .renderString({'baseHref': _baseHref, 'homeTpl': homeTplPath});
+        return output;
+
+      case error:
+        String errorTpl = getHtmlFileContents(error);
+        tpl.Template template =
+        new tpl.Template(errorTpl, name: 'error.html', htmlEscapeValues: true);
+        String errorTplPath = _cssUrl + 'error';
+        String output = template
+        .renderString({'baseHref': _baseHref, 'errorTpl': errorTplPath});
         return output;
     }
   }
