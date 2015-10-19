@@ -28,8 +28,8 @@ class DartivityControl {
     // Valid page check
     if (!pageManager.pageValid(pageId)) pageId = DartivityControlPageManager.error;
 
-    //TODO for now
-    String page = pageManager.getHtmlFileContents(pageId);
+    // Construct and write the output back to apache
+    String page = pageManager.doPage(pageId);
     _apache.writeOutput(page);
 
   }

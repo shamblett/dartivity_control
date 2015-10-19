@@ -12,6 +12,7 @@ import 'dart:io';
 import 'package:gcloud/pubsub.dart' as pubsub;
 import 'package:googleapis_auth/auth_io.dart' as auth;
 import 'package:json_object/json_object.dart' as jsonobject;
+import 'package:mustache/mustache.dart' as tpl;
 
 part 'src/dartivity_control.dart';
 part 'src/dartivity_control_cfg.dart';

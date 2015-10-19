@@ -50,6 +50,9 @@ class DartivityControlPageManager {
   String _jsPath;
   String _jsUrl;
 
+  /// Base Ref
+  String _baseHref;
+
   DartivityControlPageManager(String documentRoot, String httpHost) {
     // Set the site paths
     _htmlPath = documentRoot + '/' + LIB_DIR + HTML_DIR;
@@ -61,24 +64,37 @@ class DartivityControlPageManager {
     _cssUrl = "http://" + httpHost + '/' + CSS_DIR;
     _imageUrl = "http://" + httpHost + '/' + IMAGE_DIR;
     _jsUrl = "http://" + httpHost + '/' + JS_DIR;
+    _baseHref = "http://" + httpHost + '/';
   }
 
   /// pageValid
   /// Checks if a page id is valid
   bool pageValid(int pageId) {
-
     if ((pageId >= home) && (pageId <= _pageMap.length)) return true;
     return false;
-
   }
 
   /// getHtmlFileContents
   /// File contents getter
   String getHtmlFileContents(int pageId) {
-
     String path = _htmlPath + _pageMap[pageId];
     final File file = new File(path);
     String contents = file.readAsStringSync();
     return contents;
+  }
+
+  /// doPage
+  /// Construct and return the requested page.
+  String doPage(int pageId) {
+    switch (pageId) {
+      case home:
+        String homeTpl = getHtmlFileContents(home);
+        tpl.Template template =
+        new tpl.Template(homeTpl, name: 'home.html', htmlEscapeValues: true);
+        String homeTplPath = _cssUrl + '/home';
+        String output = template
+        .renderString({'baseHref': _baseHref, 'homeTpl': homeTplPath});
+        return output;
+    }
   }
 }
