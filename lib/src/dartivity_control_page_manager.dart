@@ -100,6 +100,9 @@ class DartivityControlPageManager {
   /// doPage
   /// Construct and return the requested page.
   String doPage(int pageId) {
+
+    String output;
+
     // Common sections
     String footerTpl = getHtmlSectionContents(FOOTER);
     tpl.Template footerTemplate = new tpl.Template(footerTpl);
@@ -114,26 +117,28 @@ class DartivityControlPageManager {
         String homeTplPath = _cssUrl + HOME.split('.')[0];
         String about = getHtmlSectionContents(ABOUT);
         String contact = getHtmlSectionContents(CONTACT);
-        String output = template.renderString({
+        output = template.renderString({
           'baseHref': _baseHref,
           'homeTpl': homeTplPath,
           'about': about,
           'contact': contact,
           'footer': footerOutput
         });
-        return output;
+        break;
 
       case error:
         String errorTpl = getHtmlFileContents(error);
         tpl.Template template = new tpl.Template(errorTpl,
             name: 'error.html', htmlEscapeValues: false);
         String errorTplPath = _cssUrl + ERROR.split('.')[0];
-        String output = template.renderString({
+        output = template.renderString({
           'baseHref': _baseHref,
           'errorTpl': errorTplPath,
           'footer': footerOutput
         });
-        return output;
+        break;
     }
+
+    return output;
   }
 }
