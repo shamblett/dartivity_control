@@ -11,4 +11,7 @@ class DartivityControlCfg {
   /// Default pages
   static const int defaultPage = DartivityControlPageManager.home;
   static const int errorPage = DartivityControlPageManager.error;
+
+  /// Version
+  static const VERSION = '0.0.1';
 }
