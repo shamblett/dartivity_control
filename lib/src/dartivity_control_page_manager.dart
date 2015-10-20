@@ -19,6 +19,11 @@ class DartivityControlPageManager {
   /// Page to file mapping list
   List<String> _pageMap = [HOME, ERROR];
 
+  /// Sections
+  static const String ABOUT = "about.html";
+  static const String CONTACT = "contact.html";
+  static const String FOOTER = "footer.html";
+
   /// Page accessors
   String pageFile(int page) {
     return _pageMap[page];
@@ -75,9 +80,18 @@ class DartivityControlPageManager {
   }
 
   /// getHtmlFileContents
-  /// File contents getter
+  /// Page file contents getter
   String getHtmlFileContents(int pageId) {
     String path = _htmlPath + _pageMap[pageId];
+    final File file = new File(path);
+    String contents = file.readAsStringSync();
+    return contents;
+  }
+
+  /// getHtmlSectionContents
+  /// Section file contents getter
+  String getHtmlSectionContents(String section) {
+    String path = _htmlPath + section;
     final File file = new File(path);
     String contents = file.readAsStringSync();
     return contents;
@@ -89,20 +103,36 @@ class DartivityControlPageManager {
     switch (pageId) {
       case home:
         String homeTpl = getHtmlFileContents(home);
-        tpl.Template template =
-        new tpl.Template(homeTpl, name: 'home.html', htmlEscapeValues: true);
-        String homeTplPath = _cssUrl + 'home';
-        String output = template
-        .renderString({'baseHref': _baseHref, 'homeTpl': homeTplPath});
+        tpl.Template template = new tpl.Template(homeTpl,
+            name: 'home.html', htmlEscapeValues: false);
+        String homeTplPath = _cssUrl + HOME.split('.')[0];
+        String about = getHtmlSectionContents(ABOUT);
+        String contact = getHtmlSectionContents(CONTACT);
+        String footer = getHtmlSectionContents(FOOTER);
+        String output = template.renderString({
+          'baseHref': _baseHref,
+          'homeTpl': homeTplPath,
+          'about': about,
+          'contact': contact,
+          'footer': footer
+        });
         return output;
 
       case error:
         String errorTpl = getHtmlFileContents(error);
-        tpl.Template template =
-        new tpl.Template(errorTpl, name: 'error.html', htmlEscapeValues: true);
-        String errorTplPath = _cssUrl + 'error';
-        String output = template
-        .renderString({'baseHref': _baseHref, 'errorTpl': errorTplPath});
+        tpl.Template template = new tpl.Template(errorTpl,
+            name: 'error.html', htmlEscapeValues: false);
+        String errorTplPath = _cssUrl + ERROR.split('.')[0];
+        String about = getHtmlSectionContents(ABOUT);
+        String contact = getHtmlSectionContents(CONTACT);
+        String footer = getHtmlSectionContents(FOOTER);
+        String output = template.renderString({
+          'baseHref': _baseHref,
+          'errorTpl': errorTplPath,
+          'about': about,
+          'contact': contact,
+          'footer': footer
+        });
         return output;
     }
   }
