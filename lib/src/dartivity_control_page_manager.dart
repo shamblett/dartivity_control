@@ -11,13 +11,15 @@ class DartivityControlPageManager {
   /// Default pages
   static const int home = 0;
   static const int error = 1;
+  static const int monitoring = 2;
 
   /// Page names
   static const String HOME = "home.html";
   static const String ERROR = "error.html";
+  static const String MONITORING = "monitoring.html";
 
   /// Page to file mapping list
-  List<String> _pageMap = [HOME, ERROR];
+  List<String> _pageMap = [HOME, ERROR, MONITORING];
 
   /// Sections
   static const String ABOUT = "about.html";
@@ -100,7 +102,6 @@ class DartivityControlPageManager {
   /// doPage
   /// Construct and return the requested page.
   String doPage(int pageId) {
-
     String output;
 
     // Common sections
@@ -114,12 +115,12 @@ class DartivityControlPageManager {
         String homeTpl = getHtmlFileContents(home);
         tpl.Template template = new tpl.Template(homeTpl,
             name: 'home.html', htmlEscapeValues: false);
-        String homeTplPath = _cssUrl + HOME.split('.')[0];
+        String homeTplUrl = _cssUrl + HOME.split('.')[0];
         String about = getHtmlSectionContents(ABOUT);
         String contact = getHtmlSectionContents(CONTACT);
         output = template.renderString({
           'baseHref': _baseHref,
-          'homeTpl': homeTplPath,
+          'homeTpl': homeTplUrl,
           'about': about,
           'contact': contact,
           'footer': footerOutput
@@ -130,12 +131,21 @@ class DartivityControlPageManager {
         String errorTpl = getHtmlFileContents(error);
         tpl.Template template = new tpl.Template(errorTpl,
             name: 'error.html', htmlEscapeValues: false);
-        String errorTplPath = _cssUrl + ERROR.split('.')[0];
+        String errorTplUrl = _cssUrl + ERROR.split('.')[0];
         output = template.renderString({
           'baseHref': _baseHref,
-          'errorTpl': errorTplPath,
+          'errorTpl': errorTplUrl,
           'footer': footerOutput
         });
+        break;
+
+      case monitoring:
+        String monitoringTpl = getHtmlFileContents(monitoring);
+        tpl.Template template = new tpl.Template(monitoringTpl,
+        name: 'monitoring.html', htmlEscapeValues: false);
+        String monitoringTplUrl = _cssUrl + MONITORING.split('.')[0];
+        output = template.renderString(
+            {'baseHref': _baseHref, 'monitoringTpl': monitoringTplUrl});
         break;
     }
 
