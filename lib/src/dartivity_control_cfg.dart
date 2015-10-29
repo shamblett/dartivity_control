@@ -14,4 +14,22 @@ class DartivityControlCfg {
 
   /// Version
   static const VERSION = '0.0.1';
+
+  /// Messaging
+
+  /// Package name
+  static const String MESS_PACKAGE_NAME = 'dartivity';
+
+  /// Pubsub project id
+  static const String MESS_PROJECT_ID = 'warm-actor-356';
+
+  /// Topic for pubsub
+  static const String MESS_TOPIC =
+  "projects/${MESS_PROJECT_ID}/topics/${MESS_PACKAGE_NAME}";
+
+  /// Pubsub credentials path
+  static const String MESS_CRED_PATH =
+  '/var/www/html/projects/dartivity_control/credentials/Development-87fde7970997.json';
+
+
 }
