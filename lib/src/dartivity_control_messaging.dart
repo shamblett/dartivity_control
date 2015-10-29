@@ -47,7 +47,7 @@ class DartivityControlMessaging {
   /// which should be in JSON format
   /// projectName - The project name(actually the google project id)
   Future<bool> initialise(String credentialsFile, String projectName) async {
-    // Get the credenttials file as a string and create a credentials class
+    // Get the credentials file as a string and create a credentials class
     String jsonCredentials = new File(credentialsFile).readAsStringSync();
     auth.ServiceAccountCredentials credentials =
     new auth.ServiceAccountCredentials.fromJson(jsonCredentials);
@@ -64,7 +64,8 @@ class DartivityControlMessaging {
       _subscription = await _pubsub.createSubscription(_dartivityId, topic);
     } catch (e) {
       if (e.status != 409) {
-        throw new DartivityControlException(DartivityControlException.SUBSCRIPTION_FAILED);
+        throw new DartivityControlException(
+            DartivityControlException.SUBSCRIPTION_FAILED);
       } else {
         _subscription = await _pubsub.lookupSubscription(_dartivityId);
       }

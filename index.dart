@@ -11,13 +11,19 @@ import 'dart:convert';
 
 import 'package:dartivity_control/dartivity_control.dart';
 
-void main(List<String> arguments) {
+void main(List<String> arguments) async {
 
   // Get Apache
   Apache myAp = new Apache();
 
-  // Get Dartivity Control
+  // Get and initialise Dartivity Control
   DartivityControl control = new DartivityControl(myAp);
+  try {
+    await control.initialise();
+  } catch (e) {
+    control.despatch(DartivityControlPageManager.error);
+    myAp.flushBuffers(true);
+  }
 
   // Pre-process the input parameters and despatch the request.
   if ( myAp.Request.containsKey('id')) {

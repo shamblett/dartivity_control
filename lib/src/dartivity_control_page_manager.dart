@@ -61,7 +61,10 @@ class DartivityControlPageManager {
   /// Base Ref
   String _baseHref;
 
-  DartivityControlPageManager(String documentRoot, String httpHost) {
+  /// Messager
+  DartivityControlMessaging _messager;
+
+  DartivityControlPageManager(String documentRoot, String httpHost, DartivityControlMessaging messager) {
     // Set the site paths
     _htmlPath = documentRoot + '/' + LIB_DIR + HTML_DIR;
     _cssPath = documentRoot + '/' + CSS_DIR;
@@ -73,6 +76,8 @@ class DartivityControlPageManager {
     _imageUrl = "http://" + httpHost + '/' + IMAGE_DIR;
     _jsUrl = "http://" + httpHost + '/' + JS_DIR;
     _baseHref = "http://" + httpHost + '/';
+
+    _messager = messager;
   }
 
   /// pageValid
