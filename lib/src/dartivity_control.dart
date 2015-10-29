@@ -24,7 +24,7 @@ class DartivityControl {
   /// despatch
   /// Despatch the incoming request dependant on its incoming
   /// page identifier
-  void despatch(int pageId) {
+  Future despatch(int pageId) async {
     // Get a page manager
     String docRoot = _apache.Server['DOCUMENT_ROOT'];
     String httpHost = _apache.Server['HTTP_HOST'];
@@ -36,7 +36,7 @@ class DartivityControl {
     DartivityControlPageManager.error;
 
     // Construct and write the output back to apache
-    String page = pageManager.doPage(pageId, _apache.Request);
+    String page = await pageManager.doPage(pageId, _apache.Request);
     _apache.writeOutput(page);
   }
 
@@ -46,7 +46,6 @@ class DartivityControl {
     _messager = new DartivityControlMessaging(_id);
     await _messager.initialise(DartivityControlCfg.MESS_CRED_PATH,
     DartivityControlCfg.MESS_PROJECT_ID);
-    //_apache.w("Failed to init pubsub2");
     if (!_messager.ready) throw new DartivityControlException(
         DartivityControlException.FAILED_TO_INITIALISE_MESSAGER);
   }

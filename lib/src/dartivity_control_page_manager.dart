@@ -64,7 +64,8 @@ class DartivityControlPageManager {
   /// Messager
   DartivityControlMessaging _messager;
 
-  DartivityControlPageManager(String documentRoot, String httpHost, DartivityControlMessaging messager) {
+  DartivityControlPageManager(String documentRoot, String httpHost,
+                              DartivityControlMessaging messager) {
     // Set the site paths
     _htmlPath = documentRoot + '/' + LIB_DIR + HTML_DIR;
     _cssPath = documentRoot + '/' + CSS_DIR;
@@ -107,15 +108,14 @@ class DartivityControlPageManager {
 
   /// buildResourceList
   /// Construct a list of resources
-  String _buildResourceList(List<Map<String, String>>resources) {
-
+  String _buildResourceList(List<DartivityControlMessage> resources) {
     //TODO
     return getHtmlSectionContents(RESOURCE);
   }
 
   /// doPage
   /// Construct and return the requested page.
-  String doPage(int pageId, Map request) {
+  Future<String> doPage(int pageId, Map request) async {
     String output;
 
     // Common sections
@@ -154,7 +154,6 @@ class DartivityControlPageManager {
         break;
 
       case monitoring:
-
         String monitoringTpl = getHtmlFileContents(monitoring);
         tpl.Template template = new tpl.Template(monitoringTpl,
         name: 'monitoring.html', htmlEscapeValues: false);
@@ -165,22 +164,50 @@ class DartivityControlPageManager {
         bool refresh;
         bool discover;
         request.containsKey('res-refresh') ? refresh = true : refresh = false;
-        request.containsKey('res-discover') ? discover = true : discover = false;
+        request.containsKey('res-discover')
+        ? discover = true
+        : discover = false;
         if (refresh) {
-
           // Get the resources and return them
-          resourceList = _buildResourceList(null);
+          List<DartivityControlMessage> messageList = new List<DartivityControlMessage>();
+          pubsub.Message message = await _messager.receive();
+          if (message != null) {
+            String messageString = message.asString;
+            DartivityControlMessage dartivityMessage =
+            new DartivityControlMessage.fromJSON(messageString);
+            messageList.add(dartivityMessage);
+          }
+
+          resourceList = _buildResourceList(messageList);
         }
         if (discover) {
-
           // Send a who has to all clients
+          DartivityControlMessage whoHas = new DartivityControlMessage.whoHas(DartivityControlMessage.ADDRESS_WEB_SERVER,
+          "/oic/res");
+          await _messager.send(whoHas.toJSON());
         }
 
-        output = template.renderString(
-            {'baseHref': _baseHref, 'monitoringTpl': monitoringTplUrl, 'resourceList' : resourceList});
+        output = template.renderString({
+          'baseHref': _baseHref,
+          'monitoringTpl': monitoringTplUrl,
+          'resourceList': resourceList
+        });
         break;
     }
 
     return output;
+  }
+
+  /// initialiseMessaging
+  /// Only initialise messaging if we need it
+  static bool initialiseMessaging(int pageId, Map postData) {
+    bool out = false;
+    // If the request is for monitoring and POST data is present
+    // we need messaging.
+    if (pageId == monitoring) {
+      if (!postData.isEmpty) out = true;
+    }
+
+    return out;
   }
 }
