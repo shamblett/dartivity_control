@@ -29,7 +29,7 @@ class DartivityControl {
     if (!pageManager.pageValid(pageId)) pageId = DartivityControlPageManager.error;
 
     // Construct and write the output back to apache
-    String page = pageManager.doPage(pageId);
+    String page = pageManager.doPage(pageId, _apache.Request);
     _apache.writeOutput(page);
 
   }

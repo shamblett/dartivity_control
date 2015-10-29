@@ -25,6 +25,7 @@ class DartivityControlPageManager {
   static const String ABOUT = "about.html";
   static const String CONTACT = "contact.html";
   static const String FOOTER = "footer.html";
+  static const String RESOURCE = "resource.html";
 
   /// Page accessors
   String pageFile(int page) {
@@ -99,9 +100,17 @@ class DartivityControlPageManager {
     return contents;
   }
 
+  /// buildResourceList
+  /// Construct a list of resources
+  String _buildResourceList(List<Map<String, String>>resources) {
+
+    //TODO
+    return getHtmlSectionContents(RESOURCE);
+  }
+
   /// doPage
   /// Construct and return the requested page.
-  String doPage(int pageId) {
+  String doPage(int pageId, Map request) {
     String output;
 
     // Common sections
@@ -140,12 +149,30 @@ class DartivityControlPageManager {
         break;
 
       case monitoring:
+
         String monitoringTpl = getHtmlFileContents(monitoring);
         tpl.Template template = new tpl.Template(monitoringTpl,
         name: 'monitoring.html', htmlEscapeValues: false);
         String monitoringTplUrl = _cssUrl + MONITORING.split('.')[0];
+        String resourceList;
+
+        // Check for a submission
+        bool refresh;
+        bool discover;
+        request.containsKey('res-refresh') ? refresh = true : refresh = false;
+        request.containsKey('res-discover') ? discover = true : discover = false;
+        if (refresh) {
+
+          // Get the resources and return them
+          resourceList = _buildResourceList(null);
+        }
+        if (discover) {
+
+          // Send a who has to all clients
+        }
+
         output = template.renderString(
-            {'baseHref': _baseHref, 'monitoringTpl': monitoringTplUrl});
+            {'baseHref': _baseHref, 'monitoringTpl': monitoringTplUrl, 'resourceList' : resourceList});
         break;
     }
 
