@@ -15,7 +15,7 @@ class DartivityControl {
   DartivityControlMessaging _messager;
 
   /// Our id
-  String _id = 'webserver#1';
+  String _id = DartivityControlMessage.ADDRESS_WEB_SERVER;
 
   DartivityControl(var apache) {
     _apache = apache;

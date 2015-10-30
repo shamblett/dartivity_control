@@ -109,8 +109,16 @@ class DartivityControlPageManager {
   /// buildResourceList
   /// Construct a list of resources
   String _buildResourceList(List<DartivityControlMessage> resources) {
-    //TODO
-    return getHtmlSectionContents(RESOURCE);
+    String output = "";
+    if (resources == null) return output;
+    String resourceTpl = getHtmlSectionContents(RESOURCE);
+    tpl.Template template = new tpl.Template(resourceTpl,
+    name: 'resource.html', htmlEscapeValues: false);
+    resources.forEach((resource) {
+      output += template.renderString(
+          {'deviceId': resource.resourceName, 'dartivityId': resource.source});
+    });
+    return output;
   }
 
   /// doPage
@@ -169,22 +177,30 @@ class DartivityControlPageManager {
         : discover = false;
         if (refresh) {
           // Get the resources and return them
-          List<DartivityControlMessage> messageList = new List<DartivityControlMessage>();
-          pubsub.Message message = await _messager.receive();
-          if (message != null) {
+          List<DartivityControlMessage> messageList =
+          new List<DartivityControlMessage>();
+          while (true) {
+            pubsub.Message message = await _messager.receive();
+            if (message == null) break;
             String messageString = message.asString;
             DartivityControlMessage dartivityMessage =
             new DartivityControlMessage.fromJSON(messageString);
-            messageList.add(dartivityMessage);
+            if (dartivityMessage.type == Type.iHave) messageList
+            .add(dartivityMessage);
           }
-
-          resourceList = _buildResourceList(messageList);
+          _messager.close();
+          if (messageList != null) {
+            resourceList = _buildResourceList(messageList);
+          } else {
+            resourceList = "";
+          }
         }
         if (discover) {
-          // Send a who has to all clients
-          DartivityControlMessage whoHas = new DartivityControlMessage.whoHas(DartivityControlMessage.ADDRESS_WEB_SERVER,
-          "/oic/res");
+          // Send a who has globally
+          DartivityControlMessage whoHas = new DartivityControlMessage.whoHas(
+              DartivityControlMessage.ADDRESS_WEB_SERVER, "/oic/res");
           await _messager.send(whoHas.toJSON());
+          _messager.close();
         }
 
         output = template.renderString({

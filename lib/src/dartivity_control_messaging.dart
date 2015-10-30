@@ -104,7 +104,6 @@ class DartivityControlMessaging {
   /// Close the messager
   void close() {
     // We don't need to wait, just assume pubsub will do this
-    _subscription.delete();
     _initialised = false;
 
     // Close the auth client
