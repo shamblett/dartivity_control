@@ -26,6 +26,17 @@ class DartivityControlPageManager {
   static const String CONTACT = "contact.html";
   static const String FOOTER = "footer.html";
   static const String RESOURCE = "resource.html";
+  static const String ALERT = "alert.html";
+
+  /// Alert types
+  static const ALERT_INFO = "alert-info";
+  static const ALERT_WARNING = "alert-warning";
+  static const ALERT_DANGER = "alert-danger";
+  static const ALERT_SUCCESS = "alert-success";
+
+  /// Alert text
+  static const ALERT_TEXT_DISCOVER_OK =
+  "Discovery has completed, please refresh the resource list";
 
   /// Page accessors
   String pageFile(int page) {
@@ -107,16 +118,23 @@ class DartivityControlPageManager {
   }
 
   /// buildResourceList
-  /// Construct a list of resources
+  /// Construct a list of resources filtering duplicates
   String _buildResourceList(List<DartivityControlMessage> resources) {
     String output = "";
     if (resources == null) return output;
+    DartivityControlMessage lastResource;
     String resourceTpl = getHtmlSectionContents(RESOURCE);
     tpl.Template template = new tpl.Template(resourceTpl,
     name: 'resource.html', htmlEscapeValues: false);
     resources.forEach((resource) {
-      output += template.renderString(
-          {'deviceId': resource.resourceName, 'dartivityId': resource.source});
+      if (lastResource != null) {
+        if (resource._resourceName != lastResource.resourceName) output +=
+        template.renderString({
+          'deviceId': resource.resourceName,
+          'dartivityId': resource.source
+        });
+      }
+      lastResource = resource;
     });
     return output;
   }
@@ -166,7 +184,8 @@ class DartivityControlPageManager {
         tpl.Template template = new tpl.Template(monitoringTpl,
         name: 'monitoring.html', htmlEscapeValues: false);
         String monitoringTplUrl = _cssUrl + MONITORING.split('.')[0];
-        String resourceList;
+        String resourceList = "";
+        String alertList = "";
 
         // Check for a submission
         bool refresh;
@@ -189,11 +208,8 @@ class DartivityControlPageManager {
             .add(dartivityMessage);
           }
           _messager.close();
-          if (messageList != null) {
-            resourceList = _buildResourceList(messageList);
-          } else {
-            resourceList = "";
-          }
+          if (messageList != null) resourceList =
+          _buildResourceList(messageList);
         }
         if (discover) {
           // Send a who has globally
@@ -206,7 +222,8 @@ class DartivityControlPageManager {
         output = template.renderString({
           'baseHref': _baseHref,
           'monitoringTpl': monitoringTplUrl,
-          'resourceList': resourceList
+          'resourceList': resourceList,
+          'alertList': alertList
         });
         break;
     }
