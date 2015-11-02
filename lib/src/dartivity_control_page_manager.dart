@@ -211,8 +211,11 @@ class DartivityControlPageManager {
             String messageString = message.asString;
             DartivityControlMessage dartivityMessage =
             new DartivityControlMessage.fromJSON(messageString);
-            if (dartivityMessage.type == Type.iHave) messageList
-            .add(dartivityMessage);
+            if (dartivityMessage.type == Type.iHave) {
+              if (!messageList.contains(dartivityMessage))
+                messageList
+                .add(dartivityMessage);
+            }
           }
           _messager.close();
           if (messageList != null) resourceList =

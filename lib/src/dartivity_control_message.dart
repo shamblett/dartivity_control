@@ -46,7 +46,8 @@ class DartivityControlMessage {
   DartivityControlMessage.whoHas(String source, String resourceName,
                                  [String host = ""]) {
     if ((source == null) || (resourceName == null) || (host == null)) {
-      throw new DartivityControlException(DartivityControlException.INVALID_WHOHAS_MESSAGE);
+      throw new DartivityControlException(
+          DartivityControlException.INVALID_WHOHAS_MESSAGE);
     }
     _type = Type.whoHas;
     _source = source;
@@ -55,14 +56,15 @@ class DartivityControlMessage {
     _host = host;
   }
 
-  DartivityControlMessage.iHave(String source, String destination, String resourceName,
-                                Map<String, dynamic> resourceDetails, String host) {
+  DartivityControlMessage.iHave(String source, String destination,
+                                String resourceName, Map<String, dynamic> resourceDetails, String host) {
     if ((source == null) ||
     (resourceDetails == null) ||
     (destination == null) ||
     (resourceName == null) ||
     (host == null)) {
-      throw new DartivityControlException(DartivityControlException.INVALID_IHAVE_MESSAGE);
+      throw new DartivityControlException(
+          DartivityControlException.INVALID_IHAVE_MESSAGE);
     }
     _type = Type.iHave;
     _source = source;
@@ -124,5 +126,12 @@ class DartivityControlMessage {
   /// toString
   String toString() {
     return "Type : ${type}, Host : ${host}, Source : ${source}, Destination : ${destination}, Resource Name : ${resourceName}, Resource Details : ${resourceDetails.toString()}";
+  }
+
+  /// equals ovverride
+  bool operator ==(DartivityControlMessage other) {
+    bool state = false;
+    this.resourceName == other.resourceName ? state = true : null;
+    return state;
   }
 }
