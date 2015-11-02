@@ -37,6 +37,8 @@ class DartivityControlPageManager {
   /// Alert text
   static const ALERT_TEXT_DISCOVER_OK =
   "Discovery has completed, please refresh the resource list";
+  static const ALERT_TEXT_REFRESH_OK =
+  "Refresh has completed";
 
   /// Page accessors
   String pageFile(int page) {
@@ -122,20 +124,24 @@ class DartivityControlPageManager {
   String _buildResourceList(List<DartivityControlMessage> resources) {
     String output = "";
     if (resources == null) return output;
-    DartivityControlMessage lastResource;
     String resourceTpl = getHtmlSectionContents(RESOURCE);
     tpl.Template template = new tpl.Template(resourceTpl,
     name: 'resource.html', htmlEscapeValues: false);
     resources.forEach((resource) {
-      if (lastResource != null) {
-        if (resource._resourceName != lastResource.resourceName) output +=
-        template.renderString({
-          'deviceId': resource.resourceName,
-          'dartivityId': resource.source
-        });
-      }
-      lastResource = resource;
+      output += template.renderString(
+          {'deviceId': resource.resourceName, 'dartivityId': resource.source});
     });
+    return output;
+  }
+
+  /// buildAlertList
+  /// Build the alert list for the monitoring page
+  String _buildAlertList(String type, String text) {
+    String alertTpl = getHtmlSectionContents(ALERT);
+    tpl.Template template =
+    new tpl.Template(alertTpl, name: 'alert.html', htmlEscapeValues: false);
+    String output =
+    template.renderString({'alertType': type, 'alertText': text});
     return output;
   }
 
@@ -186,6 +192,7 @@ class DartivityControlPageManager {
         String monitoringTplUrl = _cssUrl + MONITORING.split('.')[0];
         String resourceList = "";
         String alertList = "";
+        String lastAction = "";
 
         // Check for a submission
         bool refresh;
@@ -210,6 +217,7 @@ class DartivityControlPageManager {
           _messager.close();
           if (messageList != null) resourceList =
           _buildResourceList(messageList);
+          alertList += _buildAlertList(ALERT_INFO, ALERT_TEXT_REFRESH_OK);
         }
         if (discover) {
           // Send a who has globally
@@ -217,6 +225,7 @@ class DartivityControlPageManager {
               DartivityControlMessage.ADDRESS_WEB_SERVER, "/oic/res");
           await _messager.send(whoHas.toJSON());
           _messager.close();
+          alertList += _buildAlertList(ALERT_INFO, ALERT_TEXT_DISCOVER_OK);
         }
 
         output = template.renderString({
