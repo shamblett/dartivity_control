@@ -192,7 +192,8 @@ class DartivityControlPageManager {
         String monitoringTplUrl = _cssUrl + MONITORING.split('.')[0];
         String resourceList = "";
         String alertList = "";
-        String lastAction = "";
+        DateTime now = new DateTime.now();
+        String tableStatus = "Discovery not yet performed";
 
         // Check for a submission
         bool refresh;
@@ -221,21 +222,25 @@ class DartivityControlPageManager {
           if (messageList != null) resourceList =
           _buildResourceList(messageList);
           alertList += _buildAlertList(ALERT_INFO, ALERT_TEXT_REFRESH_OK);
+          tableStatus = "Refreshed at - ${now.toIso8601String()}";
         }
         if (discover) {
           // Send a who has globally
+          String resourceName = request['res-name'] == "" ? "/oic/res" : request['res-name'];
           DartivityControlMessage whoHas = new DartivityControlMessage.whoHas(
-              DartivityControlMessage.ADDRESS_WEB_SERVER, "/oic/res");
+              DartivityControlMessage.ADDRESS_WEB_SERVER, resourceName);
           await _messager.send(whoHas.toJSON());
           _messager.close();
           alertList += _buildAlertList(ALERT_INFO, ALERT_TEXT_DISCOVER_OK);
+          tableStatus = "Discovery performed at - ${now.toIso8601String()}";
         }
 
         output = template.renderString({
           'baseHref': _baseHref,
           'monitoringTpl': monitoringTplUrl,
           'resourceList': resourceList,
-          'alertList': alertList
+          'alertList': alertList,
+          'tableStatus' :tableStatus
         });
         break;
     }
