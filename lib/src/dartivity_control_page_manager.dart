@@ -36,7 +36,7 @@ class DartivityControlPageManager {
 
   /// Alert text
   static const ALERT_TEXT_DISCOVER_OK =
-  "Discovery has completed, please refresh the resource list";
+      "Discovery has completed, please refresh the resource list after approx 5 seconds";
   static const ALERT_TEXT_REFRESH_OK =
   "Refresh has completed";
 
