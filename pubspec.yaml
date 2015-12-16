@@ -1,12 +1,12 @@
 name: dartivity_control
-version: 0.0.1
+version: 0.1.0
 description: A web front end and associated tools for Dartivity
 environment:
   sdk: '>=1.0.0 <2.0.0'
 dependencies:
   mustache: any
   path: any
-  gcloud: '>0.2.0'
-  googleapis_auth: any
   json_object: '>=1.0.19'
+  dartivity_messaging: '>= 0.1.0 <= 1.0.0'
+  dartivity_database: '>=0.1.0 <= 1.0.0'
 

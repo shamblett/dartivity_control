@@ -75,10 +75,10 @@ class DartivityControlPageManager {
   String _baseHref;
 
   /// Messager
-  DartivityControlMessaging _messager;
+  mess.DartivityMessaging _messager;
 
   DartivityControlPageManager(String documentRoot, String httpHost,
-                              DartivityControlMessaging messager) {
+      mess.DartivityMessaging messager) {
     // Set the site paths
     _htmlPath = documentRoot + '/' + LIB_DIR + HTML_DIR;
     _cssPath = documentRoot + '/' + CSS_DIR;
@@ -121,7 +121,7 @@ class DartivityControlPageManager {
 
   /// buildResourceList
   /// Construct a list of resources filtering duplicates
-  String _buildResourceList(List<DartivityControlMessage> resources) {
+  String _buildResourceList(List<mess.DartivityMessage> resources) {
     String output = "";
     if (resources == null) return output;
     String resourceTpl = getHtmlSectionContents(RESOURCE);
@@ -204,18 +204,15 @@ class DartivityControlPageManager {
         : discover = false;
         if (refresh) {
           // Get the resources and return them
-          List<DartivityControlMessage> messageList =
-          new List<DartivityControlMessage>();
+          List<mess.DartivityMessage> messageList = new List<
+              mess.DartivityMessage>();
           while (true) {
-            pubsub.Message message = await _messager.receive();
+            mess.DartivityMessage message = await _messager.receive();
             if (message == null) break;
-            String messageString = message.asString;
-            DartivityControlMessage dartivityMessage =
-            new DartivityControlMessage.fromJSON(messageString);
-            if (dartivityMessage.type == Type.iHave) {
-              if (!messageList.contains(dartivityMessage))
+            if (message.type == mess.MessageType.iHave) {
+              if (!messageList.contains(message))
                 messageList
-                .add(dartivityMessage);
+                    .add(message);
             }
           }
           _messager.close();
@@ -227,9 +224,9 @@ class DartivityControlPageManager {
         if (discover) {
           // Send a who has globally
           String resourceName = request['res-name'] == "" ? "/oic/res" : request['res-name'];
-          DartivityControlMessage whoHas = new DartivityControlMessage.whoHas(
-              DartivityControlMessage.ADDRESS_WEB_SERVER, resourceName);
-          await _messager.send(whoHas.toJSON());
+          mess.DartivityMessage whoHas = new mess.DartivityMessage.whoHas(
+              mess.DartivityMessage.ADDRESS_WEB_SERVER, resourceName);
+          await _messager.send(whoHas);
           _messager.close();
           alertList += _buildAlertList(ALERT_INFO, ALERT_TEXT_DISCOVER_OK);
           tableStatus = "Discovery performed at - ${now.toIso8601String()}";

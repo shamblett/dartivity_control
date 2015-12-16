@@ -8,10 +8,11 @@
 
 import 'dart:io';
 import 'dart:convert';
+import 'dart:async';
 
 import 'package:dartivity_control/dartivity_control.dart';
 
-void main(List<String> arguments) async {
+Future main(List<String> arguments) async {
 
   // Get Apache
   Apache myAp = new Apache();

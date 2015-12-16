@@ -12,10 +12,10 @@ class DartivityControl {
   var _apache;
 
   /// Messaging client
-  DartivityControlMessaging _messager;
+  mess.DartivityMessaging _messager;
 
   /// Our id
-  String _id = DartivityControlMessage.ADDRESS_WEB_SERVER;
+  String _id = mess.DartivityMessage.ADDRESS_WEB_SERVER;
 
   DartivityControl(var apache) {
     _apache = apache;
@@ -43,17 +43,23 @@ class DartivityControl {
   /// initialise
   /// Initialise messaging etc.
   Future<bool> initialise() async {
-    _messager = new DartivityControlMessaging(_id);
+    Completer completer = new Completer();
+    _messager = new mess.DartivityMessaging(_id);
     await _messager.initialise(DartivityControlCfg.MESS_CRED_PATH,
-    DartivityControlCfg.MESS_PROJECT_ID);
-    if (!_messager.ready) throw new DartivityControlException(
-        DartivityControlException.FAILED_TO_INITIALISE_MESSAGER);
+        DartivityControlCfg.MESS_PROJECT_ID, DartivityControlCfg.MESS_TOPIC);
+    if (!_messager.ready) {
+      throw new DartivityControlException(
+          DartivityControlException.FAILED_TO_INITIALISE_MESSAGER);
+    } else {
+      completer.complete(_messager.ready);
+    }
+    return completer.future;
   }
 
   /// close
   ///
   /// Close the controller
   void close() {
-    _messager.close();
+    _messager.close(false);
   }
 }
