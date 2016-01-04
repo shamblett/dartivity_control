@@ -215,7 +215,7 @@ class DartivityControlPageManager {
                     .add(message);
             }
           }
-          _messager.close();
+          _messager.close(false);
           if (messageList != null) resourceList =
           _buildResourceList(messageList);
           alertList += _buildAlertList(ALERT_INFO, ALERT_TEXT_REFRESH_OK);
@@ -227,7 +227,7 @@ class DartivityControlPageManager {
           mess.DartivityMessage whoHas = new mess.DartivityMessage.whoHas(
               mess.DartivityMessage.ADDRESS_WEB_SERVER, resourceName);
           await _messager.send(whoHas);
-          _messager.close();
+          _messager.close(false);
           alertList += _buildAlertList(ALERT_INFO, ALERT_TEXT_DISCOVER_OK);
           tableStatus = "Discovery performed at - ${now.toIso8601String()}";
         }
