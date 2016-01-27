@@ -34,22 +34,20 @@ Future main(List<String> arguments) async {
           try {
             await control.initialise();
           } catch (e) {
-            control.despatch(DartivityControlPageManager.error);
+            await control.despatch(DartivityControlPageManager.error);
             myAp.flushBuffers(true);
           }
         }
         await control.despatch(pageId);
 
       } catch(e) {
-
-        control.despatch(DartivityControlCfg.defaultPage);
+        await control.despatch(DartivityControlCfg.defaultPage);
       }
     } else {
-
-      control.despatch(DartivityControlCfg.errorPage);
+      await control.despatch(DartivityControlCfg.errorPage);
     }
   } else {
-    control.despatch(DartivityControlCfg.defaultPage);
+    await control.despatch(DartivityControlCfg.defaultPage);
   }
 
   // Flush buffers and exit
