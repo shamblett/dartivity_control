@@ -174,7 +174,8 @@
 
                                         <div class="checkbox">
                                             <label>
-                                                <input type="checkbox" value="1">Database
+                                                <input type="checkbox" value="1" name="typeDatabase"
+                                                       onclick="$('.discoverBtn').prop('disabled', function (_, val) { return ! val; });">Database
                                             </label>
                                         </div>
                                     </div>
@@ -247,10 +248,12 @@
                                              <option>5</option>
                                          </select>
                                      </div>-->
-                                    <button type="submit" class="btn btn-default pull-right" name="res-refresh"
+                                    <button type="submit" class="btn btn-default pull-right refreshBtn"
+                                            name="res-refresh"
                                             formtarget="_self" value="res-refresh">Refresh
                                     </button>
-                                    <button type="submit" class="btn btn-default pull-right" name="res-discover"
+                                    <button type="submit" class="btn btn-default pull-right discoverBtn"
+                                            name="res-discover"
                                             formtarget="_self" value="res-discover">Discover
                                     </button>
                                     <button type="reset" class="btn btn-default" onclick="$('.clearme').remove();
