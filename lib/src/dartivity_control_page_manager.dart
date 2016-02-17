@@ -37,8 +37,8 @@ class DartivityControlPageManager {
   /// Alert text
   static const ALERT_TEXT_DISCOVER_OK =
       "Discovery has completed, please refresh the resource list after approx 5 seconds";
-  static const ALERT_TEXT_REFRESH_OK =
-  "Refresh has completed";
+  static const ALERT_TEXT_REFRESH_OK = "Refresh has completed";
+  static const ALERT_TEXT_NO_DATABASE = "Unable to connect to the dartivity database";
 
   /// Page accessors
   String pageFile(int page) {
@@ -119,17 +119,36 @@ class DartivityControlPageManager {
     return contents;
   }
 
-  /// buildResourceList
-  /// Construct a list of resources filtering duplicates
-  String _buildResourceList(List<mess.DartivityMessage> resources) {
+  /// buildResourceListMessage
+  /// Construct a list of resources filtering duplicates from a list of messages
+  String _buildResourceListMessage(List<mess.DartivityMessage> resources) {
     String output = "";
     if (resources == null) return output;
     String resourceTpl = getHtmlSectionContents(RESOURCE);
     tpl.Template template = new tpl.Template(resourceTpl,
-    name: 'resource.html', htmlEscapeValues: false);
+        name: 'resource.html', htmlEscapeValues: false);
     resources.forEach((resource) {
       output += template.renderString(
           {'deviceId': resource.resourceName, 'dartivityId': resource.source});
+    });
+    return output;
+  }
+
+  /// buildResourceListDatabase
+  /// Construct a list of resources filtering duplicates from the database
+  String _buildResourceListDatabase(
+      Map<String, db.DartivityResource>resources) {
+    String output = "";
+    if (resources == null) return output;
+    String resourceTpl = getHtmlSectionContents(RESOURCE);
+    tpl.Template template = new tpl.Template(resourceTpl,
+        name: 'resource.html', htmlEscapeValues: false);
+    resources.forEach((key, resource) {
+      output += template.renderString(
+          {
+            'deviceId': resource.resource.resourceName,
+            'dartivityId': resource.resource.source
+          });
     });
     return output;
   }
@@ -188,7 +207,7 @@ class DartivityControlPageManager {
       case monitoring:
         String monitoringTpl = getHtmlFileContents(monitoring);
         tpl.Template template = new tpl.Template(monitoringTpl,
-        name: 'monitoring.html', htmlEscapeValues: false);
+            name: 'monitoring.html', htmlEscapeValues: false);
         String monitoringTplUrl = _cssUrl + MONITORING.split('.')[0];
         String resourceList = "";
         String alertList = "";
@@ -200,30 +219,43 @@ class DartivityControlPageManager {
         bool discover;
         request.containsKey('res-refresh') ? refresh = true : refresh = false;
         request.containsKey('res-discover')
-        ? discover = true
-        : discover = false;
+            ? discover = true
+            : discover = false;
         if (refresh) {
           // Get the resources and return them
-          List<mess.DartivityMessage> messageList = new List<
-              mess.DartivityMessage>();
-          while (true) {
-            mess.DartivityMessage message = await _messager.receive();
-            if (message == null) break;
-            if (message.type == mess.MessageType.iHave) {
-              if (!messageList.contains(message))
-                messageList
-                    .add(message);
+          if (request.containsKey('typeDatabase')) {
+            // Get the resources from the database
+            db.DartivityResourceDatabase dbase =
+            new db.DartivityResourceDatabase(db_hostName, db_user, db_password);
+            if (!dbase.initialised) {
+              alertList += _buildAlertList(ALERT_INFO, ALERT_TEXT_NO_DATABASE);
+            } else {
+              Map<String, db.DartivityResource>resourceMap = new Map<String,
+                  db.DartivityResource>();
+              resourceMap = await dbase.all();
+              _buildResourceListDatabase(resourceMap);
             }
+          } else {
+            List<mess.DartivityMessage> messageList =
+            new List<mess.DartivityMessage>();
+            while (true) {
+              mess.DartivityMessage message = await _messager.receive();
+              if (message == null) break;
+              if (message.type == mess.MessageType.iHave) {
+                if (!messageList.contains(message)) messageList.add(message);
+              }
+            }
+            _messager.close(false);
+            if (messageList != null) resourceList =
+                _buildResourceListMessage(messageList);
           }
-          _messager.close(false);
-          if (messageList != null) resourceList =
-          _buildResourceList(messageList);
           alertList += _buildAlertList(ALERT_INFO, ALERT_TEXT_REFRESH_OK);
           tableStatus = "Refreshed at - ${now.toIso8601String()}";
         }
         if (discover) {
           // Send a who has globally
-          String resourceName = request['res-name'] == "" ? "/oic/res" : request['res-name'];
+          String resourceName =
+          request['res-name'] == "" ? "/oic/res" : request['res-name'];
           mess.DartivityMessage whoHas = new mess.DartivityMessage.whoHas(
               mess.DartivityMessage.ADDRESS_WEB_SERVER, resourceName);
           await _messager.send(whoHas);
@@ -237,7 +269,7 @@ class DartivityControlPageManager {
           'monitoringTpl': monitoringTplUrl,
           'resourceList': resourceList,
           'alertList': alertList,
-          'tableStatus' :tableStatus
+          'tableStatus': tableStatus
         });
         break;
     }
