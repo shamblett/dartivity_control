@@ -39,6 +39,7 @@ class DartivityControlPageManager {
       "Discovery has completed, please refresh the resource list after approx 5 seconds";
   static const ALERT_TEXT_REFRESH_OK = "Refresh has completed";
   static const ALERT_TEXT_NO_DATABASE = "Unable to connect to the dartivity database";
+  static const ALERT_TEXT_UNABLE_TO_GET_DATA = "Unable to read from the database";
 
   /// Page accessors
   String pageFile(int page) {
@@ -146,8 +147,8 @@ class DartivityControlPageManager {
     resources.forEach((key, resource) {
       output += template.renderString(
           {
-            'deviceId': resource.resource.resourceName,
-            'dartivityId': resource.resource.source
+            'deviceId': resource.id,
+            'dartivityId': resource.clientId
           });
     });
     return output;
@@ -232,8 +233,13 @@ class DartivityControlPageManager {
             } else {
               Map<String, db.DartivityResource>resourceMap = new Map<String,
                   db.DartivityResource>();
-              resourceMap = await dbase.all();
-              _buildResourceListDatabase(resourceMap);
+              try {
+                resourceMap = await dbase.all();
+              } catch (e) {
+                alertList +=
+                    _buildAlertList(ALERT_INFO, ALERT_TEXT_UNABLE_TO_GET_DATA);
+              }
+              resourceList = _buildResourceListDatabase(resourceMap);
             }
           } else {
             List<mess.DartivityMessage> messageList =
