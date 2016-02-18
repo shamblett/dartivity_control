@@ -13,7 +13,7 @@ class DartivityControlCfg {
   static const int errorPage = DartivityControlPageManager.error;
 
   /// Version
-  static const VERSION = '0.0.1';
+  static const VERSION = '0.1.0';
 
   /// Messaging
 

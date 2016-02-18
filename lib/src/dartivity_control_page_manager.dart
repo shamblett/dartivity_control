@@ -130,7 +130,10 @@ class DartivityControlPageManager {
         name: 'resource.html', htmlEscapeValues: false);
     resources.forEach((resource) {
       output += template.renderString(
-          {'deviceId': resource.resourceName, 'dartivityId': resource.source});
+          {'deviceId': resource.resourceName, 'dartivityId': resource.source,
+            'provider': resource.provider[0].toUpperCase() +
+                resource.provider.substring(1),
+            'source': 'Live'});
     });
     return output;
   }
@@ -148,7 +151,10 @@ class DartivityControlPageManager {
       output += template.renderString(
           {
             'deviceId': resource.id,
-            'dartivityId': resource.clientId
+            'dartivityId': resource.clientId,
+            'provider': resource.provider[0].toUpperCase() +
+                resource.provider.substring(1),
+            'source': 'Storage'
           });
     });
     return output;
