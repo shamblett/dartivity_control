@@ -27,6 +27,9 @@ class DartivityControlPageManager {
   static const String FOOTER = "footer.html";
   static const String RESOURCE = "resource.html";
   static const String ALERT = "alert.html";
+  static const String MONITORING_RESOURCE_PREFIX = "monitoring_resource_";
+  static const String MONITORING_RESOURCE_POSTFIX = ".html";
+  static const String NO_PROVIDER = 'none';
 
   /// Alert types
   static const ALERT_INFO = "alert-info";
@@ -171,6 +174,28 @@ class DartivityControlPageManager {
     return output;
   }
 
+  /// buildResourceDetails
+  /// Build the resource details apnel for the monitoring page
+  String _buildResourceDetails(String provider, dynamic resource) {
+    String templateName = MONITORING_RESOURCE_PREFIX +
+        provider + MONITORING_RESOURCE_POSTFIX;
+    String resourceTpl = getHtmlSectionContents(templateName);
+    tpl.Template template =
+    new tpl.Template(resourceTpl, name: templateName, htmlEscapeValues: false);
+    String output;
+
+    switch (provider) {
+      case NO_PROVIDER:
+        output = template.renderString(null);
+        break;
+
+      default:
+        break;
+    }
+
+    return output;
+  }
+
   /// doPage
   /// Construct and return the requested page.
   Future<String> doPage(int pageId, Map request) async {
@@ -220,6 +245,7 @@ class DartivityControlPageManager {
         String alertList = "";
         DateTime now = new DateTime.now();
         String tableStatus = "Discovery not yet performed";
+        String resourceDetails = _buildResourceDetails(NO_PROVIDER, null);
 
         // Check for a submission
         bool refresh;
@@ -281,7 +307,8 @@ class DartivityControlPageManager {
           'monitoringTpl': monitoringTplUrl,
           'resourceList': resourceList,
           'alertList': alertList,
-          'tableStatus': tableStatus
+          'tableStatus': tableStatus,
+          'resourceDetails': resourceDetails
         });
         break;
     }
